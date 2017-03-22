@@ -16,8 +16,14 @@
 
 package org.springframework.samples.petclinic;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.boot.autoconfigure.web.ResourceProperties;
+import org.springframework.boot.autoconfigure.web.WebMvcProperties;
+import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
+import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter;
+import org.springframework.web.servlet.resource.VersionResourceResolver;
 
 /**
  * PetClinic Spring Boot Application.
@@ -26,7 +32,36 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
  *
  */
 @SpringBootApplication
-public class PetClinicApplication {
+public class PetClinicApplication extends WebMvcConfigurerAdapter {
+
+    @Autowired
+    private ResourceProperties resourceProperties;
+
+    @Autowired
+    private WebMvcProperties mvcProperties;
+
+    @Override
+    public void addResourceHandlers(ResourceHandlerRegistry registry) {
+        Integer cachePeriod = this.resourceProperties.getCachePeriod();
+        ResourceProperties.Chain properties = this.resourceProperties.getChain();
+        registry.addResourceHandler("/webjars/**")
+                .addResourceLocations("classpath:/META-INF/resources/webjars/")
+                .setCachePeriod(cachePeriod).resourceChain(properties.isCache());
+        registry.addResourceHandler(this.mvcProperties.getStaticPathPattern())
+                .addResourceLocations(this.resourceProperties.getStaticLocations())
+                .setCachePeriod(cachePeriod).resourceChain(properties.isCache())
+                .addResolver(getResourceResolver());
+    }
+
+    private VersionResourceResolver getResourceResolver() {
+        VersionResourceResolver resolver = new VersionResourceResolver();
+        if (resourceProperties.getChain().getStrategy().getContent().isEnabled()) {
+            String[] paths = resourceProperties.getChain().getStrategy().getContent()
+                    .getPaths();
+            resolver.addContentVersionStrategy(paths);
+        }
+        return resolver;
+    }
 
     public static void main(String[] args) throws Exception {
         SpringApplication.run(PetClinicApplication.class, args);
