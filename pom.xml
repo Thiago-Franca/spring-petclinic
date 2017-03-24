@@ -27,6 +27,7 @@
     <webjars-jquery.version>2.2.4</webjars-jquery.version>
     <wro4j.version>1.8.0</wro4j.version>
 
+    <spring.version>4.3.8.BUILD-SNAPSHOT</spring.version>
     <thymeleaf.version>3.0.2.RELEASE</thymeleaf.version>
     <thymeleaf-layout-dialect.version>2.0.4</thymeleaf-layout-dialect.version>
 
