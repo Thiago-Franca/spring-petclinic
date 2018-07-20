@@ -134,10 +134,6 @@ class AutoConfigurations extends AutoConfigurationImportSelector
             }
             register(registry, evaluator, type, metadata);
         }
-        registry.registerBeanDefinition("lazyInitBeanFactoryPostProcessor",
-                BeanDefinitionBuilder
-                        .genericBeanDefinition(LazyInitBeanFactoryPostProcessor.class)
-                        .getRawBeanDefinition());
     }
 
     private void register(BeanDefinitionRegistry registry, ConditionEvaluator evaluator,

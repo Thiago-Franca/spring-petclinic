@@ -90,6 +90,10 @@ public class PetClinicApplication
         context.registerBean(ConfigurationPropertiesBindingPostProcessor.class);
         context.registerBean(ConfigurationBeanFactoryMetadata.BEAN_NAME,
                 ConfigurationBeanFactoryMetadata.class);
+        // Putting this here actually doesn't prevent the EntityManagerFactoooory from
+        // being created eagerly because that happens in a BFPP registered by Spring Data.
+        // It does improve startup from 3300ms to 2800ms though, so well worth it.
+        context.registerBean(LazyInitBeanFactoryPostProcessor.class);
         context.addBeanFactoryPostProcessor(new AutoConfigurations(context));
         context.registerBean(RepositoriesPostProcessor.class);
         context.registerBean(OwnerController.class);
@@ -105,7 +109,10 @@ public class PetClinicApplication
         public Object postProcessBeforeInitialization(Object bean, String beanName)
                 throws BeansException {
             if (bean instanceof RepositoryFactoryBeanSupport) {
-                RepositoryFactoryBeanSupport<?,?,?> support = (RepositoryFactoryBeanSupport<?, ?, ?>) bean;
+                RepositoryFactoryBeanSupport<?, ?, ?> support = (RepositoryFactoryBeanSupport<?, ?, ?>) bean;
+                // This, combined with the @Lazy annotation on the injection points (the controllers)
+                // speeds up startup from 5000ms to 3600ms in the @Configuration app, and 3600ms to 3300ms
+                // in the functional bean app.
                 support.setLazyInit(true);
             }
             return bean;
