@@ -26,7 +26,7 @@ import org.springframework.web.bind.annotation.GetMapping;
  * Also see how a view that resolves to "error" has been added ("error.html").
  */
 @Controller
-class CrashController {
+public class CrashController {
 
     @GetMapping("/oups")
     public String triggerException() {

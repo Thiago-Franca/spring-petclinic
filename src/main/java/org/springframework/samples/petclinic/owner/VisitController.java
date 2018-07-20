@@ -15,6 +15,7 @@
  */
 package org.springframework.samples.petclinic.owner;
 
+import org.springframework.context.annotation.Lazy;
 import org.springframework.samples.petclinic.visit.Visit;
 import org.springframework.samples.petclinic.visit.VisitRepository;
 import org.springframework.stereotype.Controller;
@@ -33,13 +34,13 @@ import java.util.Map;
  * @author Dave Syer
  */
 @Controller
-class VisitController {
+public class VisitController {
 
     private final VisitRepository visits;
     private final PetRepository pets;
 
 
-    public VisitController(VisitRepository visits, PetRepository pets) {
+    public VisitController(@Lazy VisitRepository visits, @Lazy PetRepository pets) {
         this.visits = visits;
         this.pets = pets;
     }

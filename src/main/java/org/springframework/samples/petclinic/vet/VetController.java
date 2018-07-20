@@ -15,6 +15,7 @@
  */
 package org.springframework.samples.petclinic.vet;
 
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -28,11 +29,11 @@ import java.util.Map;
  * @author Arjen Poutsma
  */
 @Controller
-class VetController {
+public class VetController {
 
     private final VetRepository vets;
 
-    public VetController(VetRepository clinicService) {
+    public VetController(@Lazy VetRepository clinicService) {
         this.vets = clinicService;
     }
 

@@ -15,6 +15,7 @@
  */
 package org.springframework.samples.petclinic.owner;
 
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.util.StringUtils;
@@ -32,13 +33,13 @@ import java.util.Collection;
  */
 @Controller
 @RequestMapping("/owners/{ownerId}")
-class PetController {
+public class PetController {
 
     private static final String VIEWS_PETS_CREATE_OR_UPDATE_FORM = "pets/createOrUpdatePetForm";
     private final PetRepository pets;
     private final OwnerRepository owners;
 
-    public PetController(PetRepository pets, OwnerRepository owners) {
+    public PetController(@Lazy PetRepository pets, @Lazy OwnerRepository owners) {
         this.pets = pets;
         this.owners = owners;
     }
