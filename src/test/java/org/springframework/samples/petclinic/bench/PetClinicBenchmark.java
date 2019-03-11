@@ -15,6 +15,8 @@
  */
 package org.springframework.samples.petclinic.bench;
 
+import java.net.URL;
+
 import org.openjdk.jmh.annotations.AuxCounters;
 import org.openjdk.jmh.annotations.AuxCounters.Type;
 import org.openjdk.jmh.annotations.Benchmark;
@@ -45,6 +47,15 @@ public class PetClinicBenchmark {
     public void main(MainState state) throws Exception {
         state.setMainClass(state.sample.getConfig().getName());
         state.run();
+        if (state.sample == MainState.Sample.first) {
+            try {
+                System.out.println("Loading /owners");
+                new URL("http://localhost:8080/owners").getContent();
+            }
+            catch (Exception e) {
+                // ignore
+            }
+        }
     }
 
     @State(Scope.Thread)
@@ -53,7 +64,7 @@ public class PetClinicBenchmark {
 
         public static enum Sample {
 
-            demo; // empt(EmptyApplication.class), amqp, jlog, demo, actr;
+            demo, first, init; // empt(EmptyApplication.class), amqp, jlog, demo, actr;
 
             private Class<?> config;
 
@@ -75,8 +86,7 @@ public class PetClinicBenchmark {
         private Sample sample;
 
         public MainState() {
-            super("target", "--server.port=0");
-            // "--spring.main.lazy-initialization=true");
+            super("target");
         }
 
         @Override
@@ -108,6 +118,9 @@ public class PetClinicBenchmark {
         public void start() throws Exception {
             if (sample != Sample.demo) {
                 setProfiles(sample.toString());
+            }
+            if (sample == Sample.init) {
+                addArgs("-Dinitialize=true");
             }
             super.before();
         }

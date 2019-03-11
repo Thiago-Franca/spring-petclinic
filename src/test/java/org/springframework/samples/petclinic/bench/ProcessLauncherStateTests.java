@@ -16,6 +16,8 @@
 
 package org.springframework.samples.petclinic.bench;
 
+import java.net.URL;
+
 import org.junit.jupiter.api.Test;
 
 import org.springframework.samples.petclinic.PetClinicApplication;
@@ -33,7 +35,19 @@ public class ProcessLauncherStateTests {
     @CaptureSystemOutput
     public void vanilla(OutputCapture output) throws Exception {
         // System.setProperty("bench.args", "-verbose:class");
-        ProcessLauncherState state = new ProcessLauncherState("target");
+        ProcessLauncherState state = new ProcessLauncherState("target") {
+            @Override
+            public void run() throws Exception {
+                super.run();
+                try {
+                    new URL("http://localhost:8080/owners").getContent();
+                }
+                catch (Exception e) {
+                    // ignore
+                }
+            }
+        };
+        state.addArgs("-Dinitialize=true");
         state.setMainClass(PetClinicApplication.class.getName());
         // state.setProfiles("intg");
         state.before();
@@ -41,6 +55,7 @@ public class ProcessLauncherStateTests {
         state.after();
         assertThat(output.toString()).contains("Benchmark app started");
         assertThat(state.getHeap()).isGreaterThan(0);
+        System.err.println(state.getClasses());
     }
 
 }

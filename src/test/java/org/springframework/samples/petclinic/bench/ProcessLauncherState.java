@@ -25,6 +25,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.TimeUnit;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -67,6 +69,8 @@ public class ProcessLauncherState {
     private String[] profiles = new String[0];
 
     private BufferedReader buffer;
+
+    private CountDownLatch latch = new CountDownLatch(1);
 
     private int classes;
 
@@ -179,11 +183,14 @@ public class ProcessLauncherState {
     }
 
     public void after() throws Exception {
+        drain();
         if (started != null && started.isAlive()) {
+            latch.await(10, TimeUnit.SECONDS);
             Map<String, Long> metrics = VirtualMachineMetrics.fetch(getPid());
             this.memory = VirtualMachineMetrics.total(metrics);
             this.heap = VirtualMachineMetrics.heap(metrics);
-            System.err.println(
+            this.classes = metrics.get("Classes").intValue();
+            System.out.println(
                     "Stopped " + mainClass + ": " + started.destroyForcibly().waitFor());
         }
     }
@@ -226,7 +233,7 @@ public class ProcessLauncherState {
         builder.redirectErrorStream(true);
         builder.directory(getHome());
         if (!"false".equals(System.getProperty("debug", "false"))) {
-            System.err.println("Executing: " + builder.command());
+            System.out.println("Executing: " + builder.command());
         }
         Process started;
         try {
@@ -242,7 +249,6 @@ public class ProcessLauncherState {
     protected void monitor() throws Exception {
         // use this method to wait for an app to start
         output(getBuffer(), StartupApplicationListener.MARKER);
-        // output(getBuffer(), "Started");
     }
 
     protected void finish() throws Exception {
@@ -251,7 +257,9 @@ public class ProcessLauncherState {
     }
 
     protected void drain() throws Exception {
+        System.out.println("Draining console buffer");
         output(getBuffer(), null);
+        latch.countDown();
     }
 
     protected void output(BufferedReader br, String marker) throws Exception {
@@ -278,12 +286,11 @@ public class ProcessLauncherState {
             line = null;
         }
         if (line != null) {
-            if (!"false".equals(System.getProperty("debug", "false"))) {
-                System.out.println(line);
-            }
             sb.append(line + System.getProperty("line.separator"));
         }
-        System.out.println(sb.toString());
+        if ("false".equals(System.getProperty("debug", "false"))) {
+            System.out.println(sb.toString());
+        }
     }
 
     public File getHome() {
