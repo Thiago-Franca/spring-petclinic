@@ -55,7 +55,7 @@ public class ProcessLauncherStateTests {
         state.after();
         assertThat(output.toString()).contains("Benchmark app started");
         assertThat(state.getHeap()).isGreaterThan(0);
-        System.err.println(state.getClasses());
+        assertThat(state.getClasses()).isGreaterThan(11000);
     }
 
 }

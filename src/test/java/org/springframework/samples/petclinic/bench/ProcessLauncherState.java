@@ -19,26 +19,44 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.lang.management.ManagementFactory;
 import java.lang.reflect.Field;
+import java.lang.reflect.Method;
 import java.net.MalformedURLException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import org.springframework.beans.BeansException;
+import org.springframework.beans.factory.DisposableBean;
+import org.springframework.beans.factory.support.DefaultListableBeanFactory;
+import org.springframework.boot.SpringApplication;
+import org.springframework.boot.SpringBootConfiguration;
+import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.boot.loader.archive.Archive;
 import org.springframework.boot.loader.thin.ArchiveUtils;
 import org.springframework.boot.loader.thin.DependencyResolver;
 import org.springframework.boot.loader.thin.PathResolver;
-import org.springframework.samples.petclinic.PetClinicApplication;
-import org.springframework.samples.petclinic.config.ShutdownApplicationListener;
-import org.springframework.samples.petclinic.config.StartupApplicationListener;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.ApplicationContextAware;
+import org.springframework.context.ApplicationListener;
+import org.springframework.context.ConfigurableApplicationContext;
+import org.springframework.core.Ordered;
+import org.springframework.core.annotation.AnnotatedElementUtils;
+import org.springframework.core.annotation.Order;
+import org.springframework.util.ClassUtils;
 import org.springframework.util.ReflectionUtils;
+import org.springframework.web.servlet.handler.AbstractHandlerMethodMapping;
 
 public class ProcessLauncherState {
 
@@ -62,7 +80,7 @@ public class ProcessLauncherState {
 
     private File home;
 
-    private String mainClass = PetClinicApplication.class.getName();
+    private String mainClass;
 
     private String name = "thin";
 
@@ -295,6 +313,178 @@ public class ProcessLauncherState {
 
     public File getHome() {
         return home;
+    }
+
+}
+
+class StartupApplicationListener
+        implements ApplicationListener<ApplicationReadyEvent>, ApplicationContextAware {
+
+    public static final String MARKER = "Benchmark app started";
+    private static Log logger = LogFactory.getLog(StartupApplicationListener.class);
+    private ApplicationContext context;
+
+    @Override
+    public void setApplicationContext(ApplicationContext context) throws BeansException {
+        this.context = context;
+    }
+
+    @Override
+    public void onApplicationEvent(ApplicationReadyEvent event) {
+        if (!event.getApplicationContext().equals(this.context)) {
+            return;
+        }
+        if (isSpringBootApplication(sources(event))) {
+            try {
+                logger.info(MARKER);
+            }
+            catch (Exception e) {
+            }
+        }
+    }
+
+    private boolean isSpringBootApplication(Set<Class<?>> sources) {
+        for (Class<?> source : sources) {
+            if (AnnotatedElementUtils.hasAnnotation(source,
+                    SpringBootConfiguration.class)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private Set<Class<?>> sources(ApplicationReadyEvent event) {
+        Method method = ReflectionUtils.findMethod(SpringApplication.class,
+                "getAllSources");
+        if (method == null) {
+            method = ReflectionUtils.findMethod(SpringApplication.class, "getSources");
+        }
+        ReflectionUtils.makeAccessible(method);
+        @SuppressWarnings("unchecked")
+        Set<Object> objects = (Set<Object>) ReflectionUtils.invokeMethod(method,
+                event.getSpringApplication());
+        Set<Class<?>> result = new LinkedHashSet<>();
+        for (Object object : objects) {
+            if (object instanceof String) {
+                object = ClassUtils.resolveClassName((String) object, null);
+            }
+            result.add((Class<?>) object);
+        }
+        return result;
+    }
+
+}
+
+@Order(Ordered.HIGHEST_PRECEDENCE)
+class ShutdownApplicationListener implements ApplicationListener<ApplicationReadyEvent>,
+        DisposableBean, ApplicationContextAware {
+
+    private static final String SHUTDOWN_LISTENER = "SHUTDOWN_LISTENER";
+    public static final String MARKER = "Benchmark app stopped";
+
+    private ApplicationContext context;
+
+    @Override
+    public void setApplicationContext(ApplicationContext context) throws BeansException {
+        this.context = context;
+    }
+
+    @Override
+    public void onApplicationEvent(ApplicationReadyEvent event) {
+        if (!event.getApplicationContext().equals(this.context)) {
+            return;
+        }
+        if (isSpringBootApplication(sources(event))) {
+            ((DefaultListableBeanFactory) event.getApplicationContext().getBeanFactory())
+                    .registerDisposableBean(SHUTDOWN_LISTENER, this);
+        }
+    }
+
+    @Override
+    public void destroy() throws Exception {
+        try {
+            System.out.println(MARKER);
+        }
+        catch (Exception e) {
+        }
+    }
+
+    private boolean isSpringBootApplication(Set<Class<?>> sources) {
+        for (Class<?> source : sources) {
+            if (AnnotatedElementUtils.hasAnnotation(source,
+                    SpringBootConfiguration.class)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private Set<Class<?>> sources(ApplicationReadyEvent event) {
+        Method method = ReflectionUtils.findMethod(SpringApplication.class,
+                "getAllSources");
+        if (method == null) {
+            method = ReflectionUtils.findMethod(SpringApplication.class, "getSources");
+        }
+        ReflectionUtils.makeAccessible(method);
+        @SuppressWarnings("unchecked")
+        Set<Object> objects = (Set<Object>) ReflectionUtils.invokeMethod(method,
+                event.getSpringApplication());
+        Set<Class<?>> result = new LinkedHashSet<>();
+        for (Object object : objects) {
+            if (object instanceof String) {
+                object = ClassUtils.resolveClassName((String) object, null);
+            }
+            result.add((Class<?>) object);
+        }
+        return result;
+    }
+}
+
+class BeanCountingApplicationListener
+        implements ApplicationListener<ApplicationReadyEvent>, ApplicationContextAware {
+
+    private static Log logger = LogFactory.getLog(BeanCountingApplicationListener.class);
+    private ApplicationContext context;
+
+    @Override
+    public void setApplicationContext(ApplicationContext context) throws BeansException {
+        this.context = context;
+    }
+
+    @Override
+    public void onApplicationEvent(ApplicationReadyEvent event) {
+        if (!event.getApplicationContext().equals(this.context)) {
+            return;
+        }
+        ConfigurableApplicationContext context = event.getApplicationContext();
+        log(context);
+    }
+
+    public void log(ConfigurableApplicationContext context) {
+        int count = 0;
+        String id = context.getId();
+        List<String> names = new ArrayList<>();
+        if (context.getEnvironment().getProperty("initialize", Boolean.class, false)) {
+            try {
+                context.getBean(AbstractHandlerMethodMapping.class);
+                logger.info("Instantiated bean");
+            }
+            catch (BeansException e) {
+            }
+        }
+        while (context != null) {
+            count += context.getBeanDefinitionCount();
+            names.addAll(Arrays.asList(context.getBeanDefinitionNames()));
+            context = (ConfigurableApplicationContext) context.getParent();
+        }
+        logger.info("Bean count: " + id + "=" + count);
+        logger.debug("Bean names: " + id + "=" + names);
+        try {
+            logger.info("Class count: " + id + "=" + ManagementFactory
+                    .getClassLoadingMXBean().getTotalLoadedClassCount());
+        }
+        catch (Exception e) {
+        }
     }
 
 }
