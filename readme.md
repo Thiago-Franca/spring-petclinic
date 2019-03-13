@@ -29,6 +29,15 @@ Or you can run it from Maven directly using the Spring Boot Maven plugin. If you
 ./mvnw spring-boot:run
 ```
 
+## Benchmarks
+
+```
+class              method  sample  beans  classes       heap  memory  median  mean  range
+PetClinicBenchmark  main  demo    395.000  9714.000   25.913  120.768  2.055  2.072  0.021
+PetClinicBenchmark  main  first   395.000  12422.000  31.655  143.577  3.245  3.300  0.108
+PetClinicBenchmark  main  init    395.000  10825.000  25.749  128.299  2.589  2.622  0.033
+```
+
 ## In case you find a bug/suggested improvement for Spring Petclinic
 Our issue tracker is available here: https://github.com/spring-projects/spring-petclinic/issues
 
