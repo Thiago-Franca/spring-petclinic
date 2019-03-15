@@ -32,10 +32,16 @@ Or you can run it from Maven directly using the Spring Boot Maven plugin. If you
 ## Benchmarks
 
 ```
-class              method  sample  beans  classes       heap  memory  median  mean  range
-PetClinicBenchmark  main  demo    395.000  9714.000   25.913  120.768  2.055  2.072  0.021
-PetClinicBenchmark  main  first   395.000  12422.000  31.655  143.577  3.245  3.300  0.108
-PetClinicBenchmark  main  init    395.000  10825.000  25.749  128.299  2.589  2.622  0.033
+class           method  profile  sample  beans   classes     heap  memory  median  mean  range
+PetClinicBenchmark  main  demo  auto    251.000  9027.000  23.205  112.346  1.707  1.733  0.031
+PetClinicBenchmark  main  demo  init    251.000  10222.000 23.119  120.874  2.226  2.262  0.030
+PetClinicBenchmark  main  demo  manual  134.000  9262.000  19.552  107.468  1.928  1.944  0.016
+PetClinicBenchmark  main  actr  auto    395.000  9708.000  25.577  120.245  2.036  2.065  0.027
+PetClinicBenchmark  main  actr  init    395.000  10821.000 25.625  128.068  2.587  2.603  0.015
+PetClinicBenchmark  main  actr  manual  180.000  9422.000  20.496  109.253  2.009  2.029  0.018
+PetClinicBenchmark  main  first auto    251.000  11724.000 28.780  135.429  2.802  2.838  0.037
+PetClinicBenchmark  main  first init    251.000  11726.000 27.860  134.754  2.757  2.834  0.059
+PetClinicBenchmark  main  first manual  134.000  10375.000 23.376  118.078  2.273  2.311  0.035
 ```
 
 ## In case you find a bug/suggested improvement for Spring Petclinic

@@ -33,6 +33,7 @@ import org.openjdk.jmh.annotations.TearDown;
 import org.openjdk.jmh.annotations.Warmup;
 
 import org.springframework.samples.petclinic.PetClinicApplication;
+import org.springframework.samples.test.ManualConfigApplication;
 
 import jmh.mbr.junit5.Microbenchmark;
 
@@ -47,7 +48,7 @@ public class PetClinicBenchmark {
     public void main(MainState state) throws Exception {
         state.setMainClass(state.sample.getConfig().getName());
         state.run();
-        if (state.sample == MainState.Sample.first) {
+        if (state.profile.toString().startsWith("first")) {
             try {
                 System.out.println("Loading /owners");
                 new URL("http://localhost:8080/owners").getContent();
@@ -62,9 +63,15 @@ public class PetClinicBenchmark {
     @AuxCounters(Type.EVENTS)
     public static class MainState extends ProcessLauncherState {
 
+        public static enum Profile {
+
+            demo, actr, first;
+
+        }
+
         public static enum Sample {
 
-            demo, first, init; // empt(EmptyApplication.class), amqp, jlog, demo, actr;
+            auto, init, manual(ManualConfigApplication.class);
 
             private Class<?> config;
 
@@ -84,6 +91,9 @@ public class PetClinicBenchmark {
 
         @Param
         private Sample sample;
+
+        @Param
+        private Profile profile;
 
         public MainState() {
             super("target");
@@ -116,8 +126,8 @@ public class PetClinicBenchmark {
 
         @Setup(Level.Trial)
         public void start() throws Exception {
-            if (sample != Sample.demo) {
-                setProfiles(sample.toString());
+            if (profile != Profile.demo) {
+                setProfiles(profile.toString());
             }
             if (sample == Sample.init) {
                 addArgs("-Dinitialize=true");
