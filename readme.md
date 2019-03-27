@@ -32,16 +32,15 @@ Or you can run it from Maven directly using the Spring Boot Maven plugin. If you
 ## Benchmarks
 
 ```
-class           method  profile  sample  beans   classes     heap  memory  median  mean  range
-PetClinicBenchmark  main  demo  auto    251.000  9027.000  23.205  112.346  1.707  1.733  0.031
-PetClinicBenchmark  main  demo  init    251.000  10222.000 23.119  120.874  2.226  2.262  0.030
-PetClinicBenchmark  main  demo  manual  134.000  9262.000  19.552  107.468  1.928  1.944  0.016
-PetClinicBenchmark  main  actr  auto    395.000  9708.000  25.577  120.245  2.036  2.065  0.027
-PetClinicBenchmark  main  actr  init    395.000  10821.000 25.625  128.068  2.587  2.603  0.015
-PetClinicBenchmark  main  actr  manual  180.000  9422.000  20.496  109.253  2.009  2.029  0.018
-PetClinicBenchmark  main  first auto    251.000  11724.000 28.780  135.429  2.802  2.838  0.037
-PetClinicBenchmark  main  first init    251.000  11726.000 27.860  134.754  2.757  2.834  0.059
-PetClinicBenchmark  main  first manual  134.000  10375.000 23.376  118.078  2.273  2.311  0.035
+class             method  profile sample  beans  classes      heap  memory  median  mean  range
+PetClinicBenchmark  main  demo   auto    232.000  8887.000  21.885  108.310  1.577  1.603  0.030
+PetClinicBenchmark  main  demo   manual  132.000  9207.000  19.657  107.204  1.854  1.895  0.067
+PetClinicBenchmark  main  actr   auto    375.000  8769.000  24.561  112.220  1.896  1.965  0.080
+PetClinicBenchmark  main  actr   manual  178.000  9368.000  19.908  108.289  1.940  1.981  0.058
+PetClinicBenchmark  main  init   auto    232.000  10119.000 22.811  117.887  2.119  2.164  0.082
+PetClinicBenchmark  main  init   manual  132.000  9259.000  19.701  107.627  1.860  1.907  0.054
+PetClinicBenchmark  main  first  auto    232.000  11631.000 27.796  131.958  2.699  2.768  0.125
+PetClinicBenchmark  main  first  manual  132.000  10332.000 23.059  117.405  2.202  2.224  0.021
 ```
 
 ## In case you find a bug/suggested improvement for Spring Petclinic

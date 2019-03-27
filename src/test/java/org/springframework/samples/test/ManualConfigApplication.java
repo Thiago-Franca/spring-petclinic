@@ -41,10 +41,13 @@ import org.springframework.boot.autoconfigure.web.servlet.DispatcherServletAutoC
 import org.springframework.boot.autoconfigure.web.servlet.ServletWebServerFactoryAutoConfiguration;
 import org.springframework.boot.autoconfigure.web.servlet.WebMvcAutoConfiguration;
 import org.springframework.boot.autoconfigure.web.servlet.error.ErrorMvcAutoConfiguration;
+import org.springframework.boot.devtools.autoconfigure.DevToolsDataSourceAutoConfiguration;
 import org.springframework.boot.devtools.autoconfigure.EagerInitializationAutoConfiguration;
+import org.springframework.boot.devtools.autoconfigure.LocalDevToolsAutoConfiguration;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
+import org.springframework.data.repository.config.BootstrapMode;
 import org.springframework.samples.petclinic.owner.Owner;
 import org.springframework.samples.petclinic.vet.Vet;
 import org.springframework.samples.petclinic.visit.Visit;
@@ -63,11 +66,11 @@ import org.springframework.samples.petclinic.visit.Visit;
         ErrorMvcAutoConfiguration.class, DispatcherServletAutoConfiguration.class,
         ThymeleafAutoConfiguration.class, CacheAutoConfiguration.class,
         ConfigurationPropertiesAutoConfiguration.class,
-        PropertyPlaceholderAutoConfiguration.class,
-        EagerInitializationAutoConfiguration.class })
-@Import(ApplicationActuatorConfiguration.class)
+        PropertyPlaceholderAutoConfiguration.class })
+@Import({ ApplicationActuatorConfiguration.class, DevToolsConfiguration.class })
 @EntityScan(basePackageClasses = { Owner.class, Vet.class, Visit.class })
-@EnableJpaRepositories(basePackageClasses = { Owner.class, Vet.class, Visit.class })
+@EnableJpaRepositories(basePackageClasses = { Owner.class, Vet.class,
+        Visit.class }, bootstrapMode = BootstrapMode.LAZY)
 public class ManualConfigApplication {
 
     public static void main(String[] args) {
@@ -84,4 +87,11 @@ public class ManualConfigApplication {
         ServletManagementContextAutoConfiguration.class,
         ManagementContextAutoConfiguration.class })
 class ApplicationActuatorConfiguration {
+}
+
+@ConditionalOnClass(name = "org.springframework.boot.devtools.autoconfigure.EagerInitializationAutoConfiguration")
+@Configuration(proxyBeanMethods = false)
+@ImportAutoConfiguration({ EagerInitializationAutoConfiguration.class,
+        DevToolsDataSourceAutoConfiguration.class, LocalDevToolsAutoConfiguration.class })
+class DevToolsConfiguration {
 }

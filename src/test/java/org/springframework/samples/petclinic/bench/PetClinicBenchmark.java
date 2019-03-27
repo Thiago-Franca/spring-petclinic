@@ -65,13 +65,13 @@ public class PetClinicBenchmark {
 
         public static enum Profile {
 
-            demo, actr, first;
+            demo, actr, init, first;
 
         }
 
         public static enum Sample {
 
-            auto, init, manual(ManualConfigApplication.class);
+            auto, manual(ManualConfigApplication.class);
 
             private Class<?> config;
 
@@ -92,7 +92,7 @@ public class PetClinicBenchmark {
         @Param
         private Sample sample;
 
-        @Param
+        @Param({ "demo", "actr", "first" })
         private Profile profile;
 
         public MainState() {
@@ -129,7 +129,7 @@ public class PetClinicBenchmark {
             if (profile != Profile.demo) {
                 setProfiles(profile.toString());
             }
-            if (sample == Sample.init) {
+            if (profile == Profile.init) {
                 addArgs("-Dinitialize=true");
             }
             super.before();
