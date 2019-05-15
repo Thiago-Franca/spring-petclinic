@@ -17,7 +17,14 @@
 package org.springframework.samples.petclinic;
 
 import org.springframework.boot.SpringApplication;
-import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.boot.autoconfigure.ImportAutoConfiguration;
+import org.springframework.boot.autoconfigure.cache.CacheAutoConfiguration;
+import org.springframework.boot.autoconfigure.thymeleaf.ThymeleafAutoConfiguration;
+import org.springframework.boot.config.HealthEndpointConfigurations;
+import org.springframework.boot.config.JpaDataConfigurations;
+import org.springframework.boot.config.SpringBootFeaturesApplication;
+import org.springframework.boot.config.WebMvcConfigurations;
+import org.springframework.context.annotation.Configuration;
 
 /**
  * PetClinic Spring Boot Application.
@@ -25,11 +32,18 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
  * @author Dave Syer
  *
  */
-@SpringBootApplication
+@SpringBootFeaturesApplication({ WebMvcConfigurations.class, JpaDataConfigurations.class,
+        HealthEndpointConfigurations.class })
 public class PetClinicApplication {
 
     public static void main(String[] args) {
         SpringApplication.run(PetClinicApplication.class, args);
     }
 
+}
+
+@ImportAutoConfiguration({ ThymeleafAutoConfiguration.class,
+        CacheAutoConfiguration.class })
+@Configuration(proxyBeanMethods = false)
+class PetClinicConfigurations {
 }
