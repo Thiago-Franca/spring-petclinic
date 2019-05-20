@@ -42,7 +42,6 @@ import org.springframework.boot.autoconfigure.web.servlet.ServletWebServerFactor
 import org.springframework.boot.autoconfigure.web.servlet.WebMvcAutoConfiguration;
 import org.springframework.boot.autoconfigure.web.servlet.error.ErrorMvcAutoConfiguration;
 import org.springframework.boot.devtools.autoconfigure.DevToolsDataSourceAutoConfiguration;
-import org.springframework.boot.devtools.autoconfigure.EagerInitializationAutoConfiguration;
 import org.springframework.boot.devtools.autoconfigure.LocalDevToolsAutoConfiguration;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
@@ -89,9 +88,9 @@ public class ManualConfigApplication {
 class ApplicationActuatorConfiguration {
 }
 
-@ConditionalOnClass(name = "org.springframework.boot.devtools.autoconfigure.EagerInitializationAutoConfiguration")
+@ConditionalOnClass(name = "org.springframework.boot.devtools.autoconfigure.DevToolsDataSourceAutoConfiguration")
 @Configuration(proxyBeanMethods = false)
-@ImportAutoConfiguration({ EagerInitializationAutoConfiguration.class,
-        DevToolsDataSourceAutoConfiguration.class, LocalDevToolsAutoConfiguration.class })
+@ImportAutoConfiguration({ DevToolsDataSourceAutoConfiguration.class,
+        LocalDevToolsAutoConfiguration.class })
 class DevToolsConfiguration {
 }
