@@ -89,7 +89,7 @@ public class PetClinicBenchmark {
 
         }
 
-        @Param
+        @Param // ("manual")
         private Sample sample;
 
         @Param({ "demo", "actr", "first" })
