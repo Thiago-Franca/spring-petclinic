@@ -82,6 +82,8 @@ public class ManualConfigApplication {
         SpringApplication.run(ManualConfigApplication.class, args);
     }
 
+    // Need this because we have `@EnableJpaRepositories` (because not in parent package
+    // of repository interfaces)
     @Bean
     public EntityManagerFactoryBuilderCustomizer entityManagerFactoryBootstrapExecutorCustomizer(
             Map<String, AsyncTaskExecutor> taskExecutors) {
