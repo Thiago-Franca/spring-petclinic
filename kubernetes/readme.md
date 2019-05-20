@@ -36,6 +36,7 @@ kubectl apply --namespace demo -f https://raw.githubusercontent.com/trisberg/spr
 ### access the app
 
 For a GKE cluster look up the IP using:
+
 ```
 kubectl get svc petclinic -n demo -o jsonpath="{.status.loadBalancer.ingress[*].ip}"
 ```
