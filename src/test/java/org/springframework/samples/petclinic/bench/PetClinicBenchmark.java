@@ -92,7 +92,7 @@ public class PetClinicBenchmark {
         @Param // ("manual")
         private Sample sample;
 
-        @Param({ "demo", "actr", "first" })
+        @Param({ "demo", "actr" }) // , "first" })
         private Profile profile;
 
         public MainState() {
