@@ -19,9 +19,14 @@ package org.springframework.samples.petclinic.bench;
 import java.net.URL;
 
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.condition.EnabledOnJre;
+import org.junit.jupiter.api.condition.JRE;
 
 import org.springframework.samples.petclinic.PetClinicApplication;
 import org.springframework.samples.petclinic.bench.CaptureSystemOutput.OutputCapture;
+import org.springframework.samples.petclinic.bench.CdsBenchmark.CdsState;
+import org.springframework.samples.petclinic.bench.CdsBenchmark.CdsState.Sample;
+import org.springframework.samples.test.ManualConfigApplication;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -55,7 +60,34 @@ public class ProcessLauncherStateTests {
         state.after();
         assertThat(output.toString()).contains("Benchmark app started");
         assertThat(state.getHeap()).isGreaterThan(0);
-        assertThat(state.getClasses()).isGreaterThan(11000);
+        assertThat(state.getClasses()).isGreaterThan(10000);
+    }
+
+    @Test
+    @CaptureSystemOutput
+    @EnabledOnJre(JRE.JAVA_11)
+    public void manual(OutputCapture output) throws Exception {
+        ProcessLauncherState state = new ProcessLauncherState("target");
+        state.setMainClass(ManualConfigApplication.class.getName());
+        state.before();
+        state.run();
+        state.after();
+        assertThat(output.toString()).contains("ManualConfigApplication");
+        assertThat(output.toString()).contains("Benchmark app started");
+    }
+
+    @Test
+    @CaptureSystemOutput
+    @EnabledOnJre(JRE.JAVA_11)
+    public void cds(OutputCapture output) throws Exception {
+        CdsState state = new CdsState();
+        state.sample = Sample.manual;
+        // state.addArgs("-Ddebug=true");
+        state.start();
+        state.run();
+        state.after();
+        assertThat(output.toString()).contains("INFO: Started");
+        assertThat(output.toString()).contains("Benchmark app started");
     }
 
 }

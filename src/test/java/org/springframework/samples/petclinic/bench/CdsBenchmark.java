@@ -15,7 +15,10 @@
  */
 package org.springframework.samples.petclinic.bench;
 
-import java.net.URL;
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
+import java.util.Arrays;
+import java.util.List;
 
 import jmh.mbr.junit5.Microbenchmark;
 import org.openjdk.jmh.annotations.AuxCounters;
@@ -41,30 +44,20 @@ import org.springframework.samples.test.ManualConfigApplication;
 @Fork(value = 2, warmups = 0)
 @BenchmarkMode(Mode.AverageTime)
 @Microbenchmark
-public class PetClinicBenchmark {
+public class CdsBenchmark {
 
     @Benchmark
-    public void main(MainState state) throws Exception {
-        state.setMainClass(state.sample.getConfig().getName());
+    public void main(CdsState state) throws Exception {
         state.run();
-        if (state.profile.toString().startsWith("first")) {
-            try {
-                System.out.println("Loading /owners");
-                new URL("http://localhost:8080/owners").getContent();
-            }
-            catch (Exception e) {
-                // ignore
-            }
-        }
     }
 
     @State(Scope.Thread)
     @AuxCounters(Type.EVENTS)
-    public static class MainState extends ProcessLauncherState {
+    public static class CdsState extends ProcessLauncherState {
 
         public static enum Profile {
 
-            demo, actr, init, first;
+            demo, actr;
 
         }
 
@@ -89,14 +82,10 @@ public class PetClinicBenchmark {
         }
 
         @Param // ("auto")
-        private Sample sample;
+        Sample sample = Sample.auto;
 
-        @Param({ "demo", "actr" }) // , "first" })
-        private Profile profile;
-
-        public MainState() {
-            super("target");
-        }
+        @Param // ({ "demo", "actr", "first" })
+        Profile profile = Profile.demo;
 
         @Override
         public int getClasses() {
@@ -118,6 +107,17 @@ public class PetClinicBenchmark {
             return super.getHeap();
         }
 
+        public CdsState() {
+            super("target", "--server.port=0");
+        }
+
+        @Override
+        protected void customize(List<String> args) {
+            args.addAll(Arrays.asList("-Xshare:on", // "-XX:+UseAppCDS",
+                    "-XX:SharedArchiveFile=app.jsa"));
+            super.customize(args);
+        }
+
         @TearDown(Level.Invocation)
         public void stop() throws Exception {
             super.after();
@@ -128,10 +128,24 @@ public class PetClinicBenchmark {
             if (profile != Profile.demo) {
                 setProfiles(profile.toString());
             }
-            if (profile == Profile.init) {
-                addArgs("-Dinitialize=true");
-            }
+            setMainClass(sample.getConfig().getName());
+            Process started = exec(new String[] { "-Xshare:off", // "-XX:+UseAppCDS",
+                    "-XX:DumpLoadedClassList=app.classlist", "-cp", "" },
+                    "--server.port=0");
+            output(new BufferedReader(new InputStreamReader(started.getInputStream())),
+                    "Started");
+            started.destroyForcibly();
+            Process dump = exec(new String[] { "-Xshare:dump", // "-XX:+UseAppCDS",
+                    "-XX:SharedClassListFile=app.classlist",
+                    "-XX:SharedArchiveFile=app.jsa", "-cp", "" });
+            // System.err.println(FileUtils.readAllLines(dump.getInputStream()));
+            dump.waitFor();
             super.before();
+        }
+
+        @Override
+        protected String getClasspath() {
+            return getClasspath(false);
         }
 
     }

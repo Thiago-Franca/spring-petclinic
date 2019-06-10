@@ -31,16 +31,56 @@ Or you can run it from Maven directly using the Spring Boot Maven plugin. If you
 
 ## Benchmarks
 
+Java 8 (with `-noverify`):
+
 ```
-class             method  profile sample  beans  classes      heap  memory  median  mean  range
-PetClinicBenchmark  main  demo   auto    232.000  8887.000  21.885  108.310  1.577  1.603  0.030
-PetClinicBenchmark  main  demo   manual  132.000  9207.000  19.657  107.204  1.854  1.895  0.067
-PetClinicBenchmark  main  actr   auto    375.000  8769.000  24.561  112.220  1.896  1.965  0.080
-PetClinicBenchmark  main  actr   manual  178.000  9368.000  19.908  108.289  1.940  1.981  0.058
+class             method  profile sample  beans    classes    heap  memory  median  mean  range
+PetClinicBenchmark  main  demo   auto    374.000  9036.000  18.523  105.637  1.844  1.862  0.020
+PetClinicBenchmark  main  demo   manual  198.000  7851.000  14.596  95.148   1.322  1.341  0.027
+PetClinicBenchmark  main  actr   auto    374.000  9047.000  18.721  105.976  1.837  1.862  0.030
+PetClinicBenchmark  main  actr   manual  198.000  7849.000  14.679  95.260   1.319  1.340  0.019
+PetClinicBenchmark  main  first  auto    374.000  11683.000 24.626  128.594  2.857  2.877  0.023
+PetClinicBenchmark  main  first  manual  198.000  9940.000  19.028  112.113  2.025  2.056  0.035
 PetClinicBenchmark  main  init   auto    232.000  10119.000 22.811  117.887  2.119  2.164  0.082
 PetClinicBenchmark  main  init   manual  132.000  9259.000  19.701  107.627  1.860  1.907  0.054
-PetClinicBenchmark  main  first  auto    232.000  11631.000 27.796  131.958  2.699  2.768  0.125
-PetClinicBenchmark  main  first  manual  132.000  10332.000 23.059  117.405  2.202  2.224  0.021
+```
+
+Java 8 (without `-noverify`):
+
+```
+class             method  profile  sample  beans  classes     heap  memory  median  mean  range
+PetClinicBenchmark  main  demo   auto    374.000  9348.000  18.023  114.565  2.570  2.660  0.080
+PetClinicBenchmark  main  demo   manual  198.000  8339.000  14.566  106.076  1.921  2.025  0.100
+PetClinicBenchmark  main  actr   auto    374.000  9316.000  17.623  113.907  2.628  2.692  0.057
+PetClinicBenchmark  main  actr   manual  198.000  8396.000  14.429  105.720  1.973  2.028  0.046
+PetClinicBenchmark  main  first  auto    374.000  12752.000 25.625  144.909  4.227  4.389  0.186
+PetClinicBenchmark  main  first  manual  198.000  10971.000 19.571  125.674  2.992  3.092  0.132
+```
+
+Java 11 (without `-noverify`):
+
+```
+class             method  profile sample  beans     classes  heap    memory  median  mean  range
+PetClinicBenchmark  main  demo    auto    374.000  9825.000  21.298  119.357  2.648  2.719  0.084
+PetClinicBenchmark  main  demo    manual  198.000  8854.000  18.224  109.570  1.963  2.026  0.051
+PetClinicBenchmark  main  actr    auto    374.000  9856.000  21.297  119.399  2.693  2.744  0.048
+PetClinicBenchmark  main  actr    manual  198.000  8748.000  18.176  109.289  1.947  2.024  0.077
+PetClinicBenchmark  main  first   auto    374.000  13309.000 28.881  152.264  4.167  4.254  0.121
+PetClinicBenchmark  main  first   manual  198.000  11513.000 23.209  133.014  2.876  3.012  0.111
+CdsBenchmark        main  demo    auto    374.000  11102.000 21.504  80.633   1.959  2.016  0.058
+CdsBenchmark        main  demo    manual  198.000  9284.000  18.169  75.055   1.319  1.429  0.104
+CdsBenchmark        main  actr    auto    374.000  11104.000 21.504  80.675   1.934  2.019  0.102
+CdsBenchmark        main  actr    manual  198.000  9284.000  18.210  76.389   1.350  1.411  0.057
+```
+
+Java 11 with CDS cache in a ramdisk(!):
+
+```
+class       method  profile sample  beans     classes    heap  memory  median  mean  range
+CdsBenchmark  main  demo    auto    216.000  9929.000  18.568  67.513  1.053  1.080  0.026
+CdsBenchmark  main  demo    manual  136.000  8678.000  16.848  68.769  0.833  0.859  0.026
+CdsBenchmark  main  actr    auto    359.000  10961.000 20.943  71.135  1.288  1.347  0.053
+CdsBenchmark  main  actr    manual  182.000  9385.000  17.942  69.740  0.928  0.943  0.018
 ```
 
 ## In case you find a bug/suggested improvement for Spring Petclinic
