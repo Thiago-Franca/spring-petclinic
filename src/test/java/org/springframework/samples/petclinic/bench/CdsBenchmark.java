@@ -81,12 +81,12 @@ public class CdsBenchmark {
 
         }
 
-        private static final String APP_JSA = "/media/ramdisk/app.jsa";
+        private static final String APP_JSA = "app.jsa";
 
         @Param // ("auto")
         Sample sample = Sample.auto;
 
-        @Param // ({ "demo", "actr", "first" })
+        @Param // ({ "demo" })
         Profile profile = Profile.demo;
 
         @Override
