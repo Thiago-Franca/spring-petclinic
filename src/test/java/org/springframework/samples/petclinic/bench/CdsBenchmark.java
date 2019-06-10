@@ -81,6 +81,8 @@ public class CdsBenchmark {
 
         }
 
+        private static final String APP_JSA = "/media/ramdisk/app.jsa";
+
         @Param // ("auto")
         Sample sample = Sample.auto;
 
@@ -114,7 +116,7 @@ public class CdsBenchmark {
         @Override
         protected void customize(List<String> args) {
             args.addAll(Arrays.asList("-Xshare:on", // "-XX:+UseAppCDS",
-                    "-XX:SharedArchiveFile=app.jsa"));
+                    "-XX:SharedArchiveFile=" + APP_JSA));
             super.customize(args);
         }
 
@@ -137,7 +139,7 @@ public class CdsBenchmark {
             started.destroyForcibly();
             Process dump = exec(new String[] { "-Xshare:dump", // "-XX:+UseAppCDS",
                     "-XX:SharedClassListFile=app.classlist",
-                    "-XX:SharedArchiveFile=app.jsa", "-cp", "" });
+                    "-XX:SharedArchiveFile=" + APP_JSA, "-cp", "" });
             // System.err.println(FileUtils.readAllLines(dump.getInputStream()));
             dump.waitFor();
             super.before();
