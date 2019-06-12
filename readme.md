@@ -83,6 +83,14 @@ CdsBenchmark  main  actr    auto    359.000  10961.000 20.943  71.135  1.288  1.
 CdsBenchmark  main  actr    manual  182.000  9385.000  17.942  69.740  0.928  0.943  0.018
 ```
 
+How to create a ramdisk: 
+
+```
+$ sudo mkdir /media/ramdisk
+$ sudo chmod 777 /media/ramdisk
+$ sudo mount -t ramfs -o size=512m ramfs /media/ramdisk
+```
+
 ## In case you find a bug/suggested improvement for Spring Petclinic
 Our issue tracker is available here: https://github.com/spring-projects/spring-petclinic/issues
 
