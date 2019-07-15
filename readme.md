@@ -31,7 +31,17 @@ Or you can run it from Maven directly using the Spring Boot Maven plugin. If you
 
 ## Benchmarks
 
-Java 8 (with `-noverify`):
+Java 8 (with `-noverify`), Boot 2.2 after M4:
+
+```
+class           method  profile sample  beans    classes     heap  memory  median  mean  range
+PetClinicBenchmark  main  demo  auto    217.000  7891.000  15.000  93.475  1.323  1.348  0.058
+PetClinicBenchmark  main  demo  manual  135.000  7300.000  13.624  89.072  1.102  1.120  0.019
+PetClinicBenchmark  main  actr  auto    360.000  8938.000  17.888  102.299 1.695  1.716  0.029
+PetClinicBenchmark  main  actr  manual  181.000  7572.000  13.576  90.968  1.187  1.197  0.029
+```
+
+Older results:
 
 ```
 class             method  profile sample  beans    classes    heap  memory  median  mean  range
