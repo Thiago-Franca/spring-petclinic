@@ -21,7 +21,6 @@ import org.junit.runner.RunWith;
 import org.testcontainers.containers.MySQLContainer;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.logging.LoggingSystem;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.util.TestPropertyValues;
 import org.springframework.context.ApplicationContextInitializer;
@@ -52,15 +51,14 @@ public class MysqlPetclinicIntegrationTests {
         private static MySQLContainer<?> mysql;
 
         static {
-            mysql = new MySQLContainer<>().withEnv("MYSQL_ROOT_PASSWORD", "petclinic")
+            mysql = new MySQLContainer<>().withUsername("petclinic").withPassword("petclinic")
                     .withDatabaseName("petclinic");
             mysql.start();
         }
 
         @Override
         public void initialize(ConfigurableApplicationContext context) {
-            TestPropertyValues.of("spring.datasource.url=jdbc:mysql://localhost:" + mysql.getFirstMappedPort() + "/petclinic")
-                    .applyTo(context);
+            TestPropertyValues.of("spring.datasource.url=" + mysql.getJdbcUrl()).applyTo(context);
         }
 
     }
