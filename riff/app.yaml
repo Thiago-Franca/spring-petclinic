@@ -1,0 +1,19 @@
+apiVersion: build.projectriff.io/v1alpha1
+kind: Application
+metadata:
+  name: petclinic
+spec:
+  image: dsyer/petclinic
+
+---
+
+apiVersion: core.projectriff.io/v1alpha1
+kind: Deployer
+metadata:
+  name: petclinic
+spec:
+  build:
+    applicationRef: petclinic
+  template:
+    containers:
+    - name: handler

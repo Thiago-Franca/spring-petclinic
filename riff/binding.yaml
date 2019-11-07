@@ -1,0 +1,22 @@
+apiVersion: core.projectriff.io/v1alpha1
+kind: Deployer
+metadata:
+  name: petclinic
+spec:
+  template:
+    containers:
+    - name: handler
+      env:
+      - name: SPRING_CONFIG_LOCATION
+        valueFrom:
+          configMapKeyRef:
+            key: SPRING_CONFIG_LOCATION
+            name: env-config
+      imagePullPolicy: Always
+      volumeMounts:
+      - name: mysql-config
+        mountPath: /config/mysql
+    volumes:
+    - name: mysql-config
+      configMap:
+        name: mysql-config
