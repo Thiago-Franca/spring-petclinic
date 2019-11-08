@@ -12,7 +12,6 @@ spec:
           configMapKeyRef:
             key: SPRING_CONFIG_LOCATION
             name: env-config
-      imagePullPolicy: Always
       volumeMounts:
       - name: mysql-config
         mountPath: /config/mysql

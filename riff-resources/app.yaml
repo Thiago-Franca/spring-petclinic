@@ -1,5 +1,5 @@
 apiVersion: build.projectriff.io/v1alpha1
-kind: Application
+kind: Container
 metadata:
   name: petclinic
 spec:
@@ -11,9 +11,11 @@ apiVersion: core.projectriff.io/v1alpha1
 kind: Deployer
 metadata:
   name: petclinic
+  labels:
+    created: manual
 spec:
   build:
-    applicationRef: petclinic
+    containerRef: petclinic
   template:
     containers:
     - name: handler
