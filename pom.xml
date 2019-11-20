@@ -28,7 +28,7 @@
 		<webjars-jquery.version>2.2.4</webjars-jquery.version>
 		<wro4j.version>1.8.0</wro4j.version>
 		<jmh.version>1.21</jmh.version>
-		<thin.version>1.0.22.RELEASE</thin.version>
+		<thin.version>1.0.23.RELEASE</thin.version>
 
 		<jacoco.version>0.8.5</jacoco.version>
 
