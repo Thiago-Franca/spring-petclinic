@@ -20,4 +20,4 @@ COPY --from=build ${DEPENDENCY}/BOOT-INF/classes /app
 RUN chown -R demo:demo /app
 USER demo
 ENTRYPOINT ["sh", "-c", "java -noverify -cp /app:/app/lib/* \
-  org.springframework.samples.PetClinicApplication ${0} ${@}"]
+  org.springframework.samples.petclinic.PetClinicApplication ${0} ${@}"]
